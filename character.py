@@ -1,10 +1,21 @@
 # Object-oriented game simulator
 # Turid Torheim, NMBU, 2026
 
+from typing import Optional
+
+from items import Weapon
+
+
 class Character:
     """Represents a character in the RPG"""
 
-    def __init__(self, name: str, hp_max: int = 100, damage: int = 10) -> None:
+    def __init__(
+        self,
+        name: str,
+        hp_max: int = 100,
+        damage: int = 10,
+        weapon: Optional[Weapon] = None,
+    ) -> None:
         """
         Initialise the Character
 
@@ -17,6 +28,7 @@ class Character:
         self._hp = hp_max  # Note: _hp indicated private attribute
         self.hp_max = hp_max
         self.damage = damage
+        self.weapon = weapon
 
     def take_damage(self, amount: int) -> None:
         """Reduces character's HP by amount, but not below 0"""
@@ -28,7 +40,11 @@ class Character:
 
     def attack(self, target) -> None:
         """Attack and deal damage to target character"""
-        target.take_damage(self.damage)
+        if self.weapon is not None:
+            damage = self.weapon.roll_damage()
+        else:
+            damage = self.damage
+        target.take_damage(damage)
 
     def introduce(self) -> None:
         """Creates string that introduces character"""
@@ -53,15 +69,13 @@ class Character:
         return self._hp > 0
 
 if __name__ == "__main__":
-    hero = Character("Hero")
-    enemy = Character("Enemy", hp_max=25)
+    from dice import Dice
 
-    hero.attack(enemy)
-    print(enemy.hp)  # 15
-    enemy.heal(100)
-    print(enemy.hp)  # 25, stops at hp_maks
-    enemy.take_damage(999)
-    print(enemy.hp)  # 0, cannot go below 0
-    print(enemy.is_alive)  # False
-    print(hero.is_alive)  # True
-    
+    sword = Weapon("Sword", Dice(sides=8))
+    hero = Character("Hero", weapon=sword)
+    enemy = Character("Enemy")
+
+    hero.attack(enemy)   # uses the sword: random damage from 1 to 8
+    print(enemy.hp)      # between 92 and 99
+    enemy.attack(hero)   # no weapon: fixed damage of 10
+    print(hero.hp)       # 90
