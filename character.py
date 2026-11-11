@@ -28,8 +28,7 @@ class Character:
 
     def attack(self, target) -> None:
         """Attack and deal damage to target character"""
-        target._hp -= self.damage
-        target._hp = max(target._hp, 0)  # Target hp cannot end up lower than 0
+        target.take_damage(self.damage)
 
     def introduce(self) -> None:
         """Creates string that introduces character"""
@@ -37,7 +36,7 @@ class Character:
 
     def __repr__(self) -> str:
         """Representation of character object"""
-        return f"<Character name={self.name} hp={self.hp} damage={self.damage}>)"
+        return f"<Character name={self.name} hp={self.hp} damage={self.damage}>"
 
     def __str__(self) -> str:
         """String representation of character object"""
@@ -47,3 +46,22 @@ class Character:
     def hp(self) -> int:
         """Public read-only property to inspect HP without allowing direct, unsafe edits."""
         return self._hp
+    
+    @property
+    def is_alive(self) -> bool:
+        """Read-only property: True if character is alive (HP > 0), False otherwise."""
+        return self._hp > 0
+
+if __name__ == "__main__":
+    hero = Character("Hero")
+    enemy = Character("Enemy", hp_max=25)
+
+    hero.attack(enemy)
+    print(enemy.hp)  # 15
+    enemy.heal(100)
+    print(enemy.hp)  # 25, stops at hp_maks
+    enemy.take_damage(999)
+    print(enemy.hp)  # 0, cannot go below 0
+    print(enemy.is_alive)  # False
+    print(hero.is_alive)  # True
+    
