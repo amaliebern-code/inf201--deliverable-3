@@ -23,7 +23,7 @@ class Dice:
 
     def __repr__(self) -> str: 
         """Representation of the Dice object"""
-        return f"Dice (sides={self.sides})"
+        return f"Dice(sides={self.sides})"
     
 if __name__ == "__main__":
     d6 = Dice()  # Default 6-sided dice
